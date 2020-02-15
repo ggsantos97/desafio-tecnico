@@ -10,6 +10,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "Telefone")
 public class Telefone implements Serializable{
@@ -26,6 +28,7 @@ public class Telefone implements Serializable{
 	private String numero;
 	
 	@ManyToOne
+	@JsonIgnore
 	private Cliente cliente;
 	
 	public Long getId() {

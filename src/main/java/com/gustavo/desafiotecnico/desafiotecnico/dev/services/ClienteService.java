@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.NoResultException;
+import javax.transaction.Transactional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,29 +56,41 @@ public class ClienteService {
 //		repository.getMapCliente().remove(dto);
 //	}
 	
-		public Iterable<ClienteDTO> findAll() throws Exception{
-			ClienteDTO dto ;
-			List<ClienteDTO> dtos = new ArrayList<>();
-			List<Cliente> entities = new  ArrayList<>();
-			entities = (List<Cliente>) repository.findAll();
-			for (Cliente cliente : entities) {
-				dto = parser.toDTO(cliente);
-				dtos.add(dto);
+		public List<Cliente> findAll() throws Exception{
+			List<Cliente> clientes = repository.findAll();
+			if(clientes.isEmpty()) {
+				 throw new Exception("Não existem clientes");
 			}
-			
-			return dtos;
+			return clientes;
 		}
 		
-		public void save(ClienteDTO dto) throws Exception {
+		@Transactional
+		public Cliente save(Cliente entity) throws Exception {
 			//odelMapper mapper = new ModelMapper();
-			  repository.save(parser.toEntity(dto));
+			if(entity.getNome().length() < 3 || entity.getNome().length() > 100) {
+				 throw new Exception("O nome deve ter entre 3 a 100 caracteres");
+			}else  {
+				return  repository.save(entity);				
+			}
 		}
 		
-		public ClienteDTO findByCpf(String cpf) throws Exception{
-			return null;
+		public ClienteDTO findByCpf(String cpf) throws Exception {	
+			ClienteDTO dto = parser.toDTO(repository.findByCpf(cpf));	
+			return dto;
+	}
+		
+		
+		public void deleteByCpf(String cpf) throws Exception{
+			try {
+				Cliente entity = repository.findByCpf(cpf);	
+				if(entity.getCpf() != null) {
+					repository.delete(entity);									
+				}
+				throw new NoResultException("Este cpf não exite");
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
 		}
 		
-		public void deleteByCpf(String cpf) {
-			
-		}
+		
 }

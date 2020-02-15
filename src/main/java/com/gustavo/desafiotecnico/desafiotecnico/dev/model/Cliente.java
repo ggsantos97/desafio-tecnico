@@ -6,17 +6,21 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+@NamedQueries(value = {
+		@NamedQuery(name = "Cliente.findByCpf", query = "SELECT c from Cliente c WHERE c.cpf =:cpf")
+})
 @Entity
 @Table(name = "Cliente")
 public class Cliente implements Serializable{
@@ -33,14 +37,14 @@ public class Cliente implements Serializable{
 	@NotNull
 	private String cpf;
 	
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "endereco_id")
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "endereco_id", referencedColumnName = "id")
 	private Endereco endereco;	
 	
-	@OneToMany(mappedBy = "cliente",cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Telefone> telefones = new ArrayList<>();
 	
-	@OneToMany(mappedBy = "cliente",cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Email> emails = new ArrayList<>();
 	
 	
