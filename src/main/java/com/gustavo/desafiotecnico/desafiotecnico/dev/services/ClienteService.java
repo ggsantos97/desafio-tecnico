@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.transaction.Transactional;
 
+import org.aspectj.weaver.patterns.ExactAnnotationFieldTypePattern;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,40 +59,47 @@ public class ClienteService {
 //	}
 	
 		public List<Cliente> findAll() throws Exception{
-			List<Cliente> clientes = repository.findAll();
+			List<Cliente> clientes = (List<Cliente>) repository.findAll();
 			if(clientes.isEmpty()) {
 				 throw new Exception("Não existem clientes");
 			}
 			return clientes;
 		}
 		
-		@Transactional
+		
 		public Cliente save(Cliente entity) throws Exception {
 			//odelMapper mapper = new ModelMapper();
 			if(entity.getNome().length() < 3 || entity.getNome().length() > 100) {
 				 throw new Exception("O nome deve ter entre 3 a 100 caracteres");
-			}else  {
-				return  repository.save(entity);				
+			}
+		/*
+		 * if(verificaCpf(entity.getCpf())) { throw new
+		 * Exception("Já existe este cpf cadastrado na Base de dados"); }
+		 */
+			else  {
+				return  repository.save(entity);
 			}
 		}
 		
-		public ClienteDTO findByCpf(String cpf) throws Exception {	
-			ClienteDTO dto = parser.toDTO(repository.findByCpf(cpf));	
-			return dto;
+		public Cliente findByCpf(String cpf) throws Exception {			
+			return repository.findByCpf(cpf);
 	}
-		
-		
-		public void deleteByCpf(String cpf) throws Exception{
-			try {
-				Cliente entity = repository.findByCpf(cpf);	
-				if(entity.getCpf() != null) {
-					repository.delete(entity);									
-				}
-				throw new NoResultException("Este cpf não exite");
-			}catch (Exception e) {
-				// TODO: handle exception
+		private  boolean verificaCpf(String cpf) {
+			Cliente c = repository.findByCpf(cpf);
+			if(c != null) {
+				return true;
+			}else {
+				return false;
 			}
 		}
 		
 		
+		public void deleteById(Long id) throws Exception{
+			try {
+				repository.deleteById(id);
+				
+			} catch (IllegalArgumentException  e) {
+				  throw new Exception("Id não pode está Nulo");
+			}
+		}				
 }

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gustavo.desafiotecnico.desafiotecnico.dev.DTO.ClienteDTO;
+import com.gustavo.desafiotecnico.desafiotecnico.dev.config.MensagemErro;
 import com.gustavo.desafiotecnico.desafiotecnico.dev.model.Cliente;
+import com.gustavo.desafiotecnico.desafiotecnico.dev.model.Message;
 import com.gustavo.desafiotecnico.desafiotecnico.dev.services.ClienteService;
 
 @RestController
@@ -51,20 +53,39 @@ public class ClienteController {
 		return  ResponseEntity.ok(service.findAll());
 	}
 	
-	@GetMapping(value = "/{cpf}")
-	public ResponseEntity<ClienteDTO> findByCpf(@PathVariable (name = "cpf")  String cpf) throws Exception{
-		return ResponseEntity.ok(service.findByCpf(cpf));
-	}
+	/*
+	 * @GetMapping(value = "/{cpf}") public ResponseEntity<ClienteDTO>
+	 * findByCpf(@PathVariable (name = "cpf") String cpf) throws Exception{ return
+	 * ResponseEntity.ok(service.findByCpf(cpf)); }
+	 */
 	
-	@DeleteMapping(value = "/{cpf}")
- 		public ResponseEntity<String> deleteByCpf(@PathVariable (name = "cpf")  String cpf) throws Exception{
-		service.deleteByCpf(cpf);
-		return ResponseEntity.ok("Cliente Excluído com sucesso");	
+	@DeleteMapping(value = "/{id}/{level}")
+ 		public ResponseEntity<Message> deleteByCpf(@PathVariable (name = "id")  Long id, @PathVariable (name = "level") String level) throws Exception{
+		if(level.equals("ADMIN")) {
+			Message m = new Message();	
+			service.deleteById(id);
+			m.setMensagem("Cliente Excluído com Sucesso");
+			return ResponseEntity.ok(m);				
+		}
+		throw new Exception("Você não tem autorização para realizar essa operação !!");
 	}
 	@PostMapping
-	public ResponseEntity<String> save(@RequestBody Cliente cliente )throws Exception{
-		service.save(cliente);
-		return ResponseEntity.ok("Cliente Salvo com sucesso !!!");
+	public ResponseEntity<Message> save(@RequestBody Cliente cliente, String level )throws Exception{
+		Message m = new Message();
+		try {
+			if(cliente.getId() != null) {
+				service.save(cliente);
+				m.setMensagem("Cliente Alterado com sucesso !!!");
+				return ResponseEntity.ok(m);
+			}else {
+				service.save(cliente);
+				m.setMensagem("Cliente Salvo com sucesso !!!");			
+			}
+			
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+		return ResponseEntity.ok(m);
 	}
 }
 

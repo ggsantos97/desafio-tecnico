@@ -27,9 +27,10 @@
 //	protected void configure(HttpSecurity http) throws Exception {
 //		// TODO Auto-generated method stub
 //		http.csrf().disable()
-//		.authorizeRequests().antMatchers(HttpMethod.GET, "**/").permitAll()
-//		.antMatchers(HttpMethod.OPTIONS, "/cliente").authenticated()
-//		.anyRequest().authenticated()
+//		.authorizeRequests().antMatchers(HttpMethod.GET, "/cliente/**").hasAnyRole("USER","ADMIN") 
+//		.antMatchers(HttpMethod.POST, "/login").hasAnyRole("USER","ADMIN")
+//		.antMatchers("/cliente/**").hasRole("ADMIN")
+//		.anyRequest().hasAuthority("ROLE_ADMIN")
 //		
 //		.and().httpBasic()
 //		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

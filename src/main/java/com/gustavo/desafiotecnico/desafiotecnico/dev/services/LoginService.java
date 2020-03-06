@@ -12,8 +12,7 @@ public class LoginService {
 	public LoginDTO autenticar(LoginDTO dto) throws Exception  {
 		
 			if(this.isValid(dto)) {		
-				if(dto.getSenha().equals("123456") && (dto.getNome().equals("admin") || dto.getNome().equals("comun"))) {
-					
+				if(dto.getSenha().equals("123456") && (dto.getNome().equals("admin") || dto.getNome().equals("comun"))) {					
 					switch (dto.getNome()) {
 					case "admin":
 						dto.setLevel("ADMIN");

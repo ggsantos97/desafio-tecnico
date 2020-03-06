@@ -26,6 +26,7 @@ public class Endereco implements Serializable{
 	private String logradouro;
 	private String  complemento;
 	private String  bairro;
+	private String  localidade;
 	private String  uf;
 	
 	@OneToOne(mappedBy = "endereco")
@@ -74,6 +75,12 @@ public class Endereco implements Serializable{
 	}
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
+	}
+	public String getLocalidade() {
+		return localidade;
+	}
+	public void setLocalidade(String localidade) {
+		this.localidade = localidade;
 	}
 
 	
